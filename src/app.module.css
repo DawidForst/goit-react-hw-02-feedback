@@ -1,0 +1,12 @@
+.wrapper {
+  background-color: whitesmoke;
+  width: 400px;
+  min-height: 350px;
+  margin-inline: auto;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: -1px 9px 23px 1px rgba(0, 0, 0, 0.78);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
