@@ -1,49 +1,55 @@
-import React, { useReducer } from "react";
-import Section from "./components/Section/Section";
-import Statistics from "./components/Statistics/Statistics";
-import FeedbackOptions from "./components/FeedbackOptions/FeedbackOptions";
-import css from "./app.module.css";
+import { useState, useEffect } from "react";
+import ContactForm from "./components/ContactForm/ContactForm";
+import ContactList from "./components/ContactList/ContactList";
+import Filter from "./components/Filter/Filter";
+import css from "./App.module.css";
 
-const initialState = { good: 0, neutral: 0, bad: 0 };
+function App() {
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState("");
 
-function reducer(state, action) {
-  switch (action.type) {
-    case "increment":
-      return { ...state, [action.option]: state[action.option] + 1 };
-    default:
-      return state;
-  }
-}
+  useEffect(() => {
+    const savedContacts = JSON.parse(localStorage.getItem("contacts"));
+    if (savedContacts) {
+      setContacts(savedContacts);
+    }
+  }, []);
 
-export default function App() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  useEffect(() => {
+    localStorage.setItem("contacts", JSON.stringify(contacts));
+  }, [contacts]);
 
-  const handleFeedback = (option) => {
-    dispatch({ type: "increment", option });
+  const handleSubmit = (contact) => {
+    setContacts((prevContacts) => [contact, ...prevContacts]);
   };
 
-  const totalFeedback = Object.values(state).reduce(
-    (acc, value) => acc + value,
-    0
-  );
+  const handleFilterChange = (event) => {
+    setFilter(event.target.value);
+  };
 
-  const positiveFeedbackPercentage =
-    totalFeedback === 0 ? 0 : Math.round((state.good / totalFeedback) * 100);
+  const getFilteredContacts = () => {
+    return contacts.filter(({ name }) =>
+      name.toLowerCase().includes(filter.toLowerCase())
+    );
+  };
+
+  const handleDeleteContact = (id) => {
+    setContacts((prevContacts) =>
+      prevContacts.filter((contact) => contact.id !== id)
+    );
+  };
+
+  const filteredContacts = getFilteredContacts();
 
   return (
-    <div className={css.wrapper}>
-      <Section title="Leave feedback">
-        <FeedbackOptions onLeaveFeedback={handleFeedback} />
-      </Section>
-      <Section title="Statistics">
-        <Statistics
-          good={state.good}
-          neutral={state.neutral}
-          bad={state.bad}
-          total={totalFeedback}
-          positivePercentage={positiveFeedbackPercentage}
-        />
-      </Section>
+    <div className={css.container}>
+      <h1>Phonebook</h1>
+      <ContactForm contacts={contacts} onSubmit={handleSubmit} />{" "}
+      <h2>Contacts</h2>
+      <Filter value={filter} onChange={handleFilterChange} />
+      <ContactList contacts={filteredContacts} onDelete={handleDeleteContact} />
     </div>
   );
 }
+
+export default App;

@@ -1,0 +1,8 @@
+.contactItem {
+    display: flex;
+    justify-content: space-between;
+    list-style: circle;
+    margin-left: 10px;
+    list-style: none;
+    padding-bottom: 5px;
+  }
